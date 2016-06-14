@@ -51,7 +51,7 @@ module Sprockets
         end
       end
 
-      assets.reduce(initial) do |h, asset|
+      result = assets.reduce(initial) do |h, asset|
         reducers.each do |k, (_, block)|
           value = k == :data ? asset.source : asset.metadata[k]
           if h.key?(k)
@@ -64,6 +64,14 @@ module Sprockets
         end
         h
       end
+
+      reducers.each do |k, (_, _, finalizer)|
+        unless finalizer.nil?
+          result[k] = finalizer.call(result[k])
+        end
+      end
+
+      result
     end
   end
 end

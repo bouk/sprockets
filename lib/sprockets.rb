@@ -105,7 +105,7 @@ module Sprockets
   register_bundle_processor 'text/css', Bundle
 
   register_bundle_metadata_reducer '*/*', :data, proc { "" }, :concat
-  register_bundle_metadata_reducer 'application/javascript', :data, proc { "" }, Utils.method(:concat_javascript_sources)
+  register_bundle_metadata_reducer 'application/javascript', :data, proc { "".encode!(Encoding::UTF_32LE) }, Utils.method(:concat_javascript_sources), proc { |v| v.encode!(Encoding::UTF_8) }
   register_bundle_metadata_reducer '*/*', :links, :+
 
   require 'sprockets/closure_compressor'

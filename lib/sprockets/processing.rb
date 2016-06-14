@@ -140,14 +140,24 @@ module Sprockets
           reducer = args[0].to_proc
         end
       when 2
+        if block_given?
+          initial = args[0]
+          reducer = block
+          finalizer = args[1].to_proc
+        else
+          initial = args[0]
+          reducer = args[1].to_proc
+        end
+      when 3
         initial = args[0]
         reducer = args[1].to_proc
+        finalizer = args[2].to_proc
       else
         raise ArgumentError, "wrong number of arguments (#{args.size} for 0..2)"
       end
 
       self.config = hash_reassoc(config, :bundle_reducers, mime_type) do |reducers|
-        reducers.merge(key => [initial, reducer])
+        reducers.merge(key => [initial, reducer, finalizer])
       end
     end
 

@@ -6,6 +6,11 @@ module Sprockets
   module Utils
     extend self
 
+    SEMICOLON = ";".encode!(Encoding::UTF_32LE)
+    NEWLINE = "\n".encode!(Encoding::UTF_32LE)
+    SPACE = " ".encode!(Encoding::UTF_32LE)
+    TAB = "\t".encode!(Encoding::UTF_32LE)
+
     # Internal: Check if object can safely be .dup'd.
     #
     # Similar to ActiveSupport #duplicable? check.
@@ -76,9 +81,9 @@ module Sprockets
       while i >= 0
         c = str[i]
         i -= 1
-        if c == "\n" || c == " " || c == "\t"
+        if c == NEWLINE || c == SPACE || c == TAB
           next
-        elsif c != ";"
+        elsif c != SEMICOLON
           return false
         else
           return true
@@ -96,10 +101,10 @@ module Sprockets
     # Returns buf String.
     def concat_javascript_sources(buf, source)
       if buf.bytesize > 0
-        buf << ";" unless string_end_with_semicolon?(buf)
-        buf << "\n" unless buf.end_with?("\n")
+        buf << SEMICOLON unless string_end_with_semicolon?(buf)
+        buf << NEWLINE unless buf.end_with?(NEWLINE)
       end
-      buf << source
+      buf << source.encode(Encoding::UTF_32LE)
     end
 
     # Internal: Prepends a leading "." to an extension if its missing.
