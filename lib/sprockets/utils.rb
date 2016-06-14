@@ -72,16 +72,14 @@ module Sprockets
     #
     # Returns true or false.
     def string_end_with_semicolon?(str)
-      i = str.size - 1
+      i = str.bytesize - 1
       while i >= 0
-        c = str[i]
+        c = str.getbyte(i)
         i -= 1
-        if c == "\n" || c == " " || c == "\t"
+        if c == 0x0A || c == 0x20 || c == 0x09
           next
-        elsif c != ";"
-          return false
         else
-          return true
+          return c == 0x3B
         end
       end
       true
@@ -96,8 +94,11 @@ module Sprockets
     # Returns buf String.
     def concat_javascript_sources(buf, source)
       if buf.bytesize > 0
-        buf << ";" unless string_end_with_semicolon?(buf)
-        buf << "\n" unless buf.end_with?("\n")
+        if string_end_with_semicolon?(buf)
+          buf << ";\n"
+        elsif buf.getbyte(buf.bytesize - 1) == 0x0A
+          buf << "\n"
+        end
       end
       buf << source
     end
